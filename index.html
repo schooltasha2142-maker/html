@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Тренажер — Створення веб-сторінки</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+        :root {
+            --bg-dark: #0F172A;
+            --bg-card: #1E293B;
+            --bg-input: #0F172A;
+            --bg-hover: #334155;
+            --border: #334155;
+            --primary: #6C5CE7;
+            --primary-light: #A29BFE;
+            --primary-dark: #4834D4;
+            --secondary: #00CEC9;
+            --accent: #FD79A8;
+            --success: #00B894;
+            --warning: #F39C12;
+            --danger: #E17055;
+            --text: #E2E8F0;
+            --text-muted: #94A3B8;
+            --text-dim: #64748B;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 8px 32px rgba(0,0,0,0.3);
+            --glow: rgba(108, 92, 231, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-light); }
+
+        /* === HEADER === */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo span {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        /* === STAGE NAV === */
+        .stage-nav {
+            display: flex;
+            gap: 6px;
+            background: var(--bg-input);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .stage-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stage-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text);
+        }
+
+        .stage-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px var(--glow);
+        }
+
+        .stage-btn .stage-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(255,255,255,0.15);
+        }
+
+        .stage-btn.active .stage-num {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* === MAIN === */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .stage {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .stage.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === LAYOUT === */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            min-height: 500px;
+        }
+
+        @media (max-width: 900px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.15);
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-body {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+        }
+
+        /* === CONSTRUCTOR TAGS === */
+        .tags-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.1);
+        }
+
+        .tag-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .tag-btn:hover {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .tag-btn:active {
+            transform: translateY(0);
+        }
+
+        .tag-btn .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a2e;
+            color: var(--text);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            margin-bottom: 6px;
+            pointer-events: none;
+            border: 1px solid var(--border);
+            z-index: 10;
+        }
+
+        .tag-btn:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* === CODE EDITOR === */
+        .code-editor {
+            width: 100%;
+            min-height: 400px;
+            background: var(--bg-input);
+            color: #A5F3FC;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            resize: vertical;
+            tab-size: 2;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .code-editor:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+        }
+
+        .code-editor::placeholder {
+            color: var(--text-dim);
+        }
+
+        /* === PREVIEW === */
+        .preview-frame {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            border: none;
+            background: white;
+            border-radius: var(--radius-sm);
+        }
+
+        /* === ACTION BUTTONS === */
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px var(--glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #00A884);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #D63031);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #E67E22);
+            color: white;
+        }
+
+        /* === INSTRUCTIONS === */
+        .instructions {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(0, 206, 201, 0.05));
+            border: 1px solid rgba(108, 92, 231, 0.25);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .instructions h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .instructions li strong {
+            color: var(--text);
+        }
+
+        /* === CHECKLIST === */
+        .checklist {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .checklist h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .checklist-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .checklist-item.checked {
+            color: var(--success);
+        }
+
+        .checklist-item .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .checklist-item.checked .checkbox {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        /* === ERROR HIGHLIGHT === */
+        .error-box {
+            background: rgba(225, 112, 85, 0.1);
+            border: 1px solid rgba(225, 112, 85, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--danger);
+            display: none;
+        }
+
+        .error-box.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .success-box {
+            background: rgba(0, 184, 148, 0.1);
+            border: 1px solid rgba(0, 184, 148, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--success);
+            display: none;
+        }
+
+        .success-box.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* === CODE EXAMPLE === */
+        .example-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .example-modal.show {
+            display: flex;
+        }
+
+        .example-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            max-width: 700px;
+            width: 100%;
+            max-height: 80vh;
+            overflow: auto;
+        }
+
+        .example-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .example-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .example-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--bg-input);
+            color: var(--text);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .example-body {
+            padding: 24px;
+        }
+
+        .example-code {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #A5F3FC;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow: auto;
+        }
+
+        .example-actions {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* === HINTS === */
+        .hints-bar {
+            background: rgba(243, 156, 18, 0.08);
+            border: 1px solid rgba(243, 156, 18, 0.2);
+            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* === STAGE INTRO === */
+        .stage-intro {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .stage-intro h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff, var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stage-intro p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 15px;
+        }
+
+        /* === LINE NUMBERS === */
+        .editor-wrapper {
+            position: relative;
+        }
+
+        .line-numbers {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            background: var(--bg-input);
+            border-right: 1px solid var(--border);
+            padding: 20px 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text-dim);
+            text-align: right;
+            user-select: none;
+            overflow: hidden;
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+        }
+
+        .code-with-numbers {
+            padding-left: 48px;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .header {
+                padding: 16px;
+            }
+
+            .header-inner {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .stage-nav {
+                width: 100%;
+                overflow-x: auto;
+                justify-content: flex-start;
+            }
+
+            .stage-btn {
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+
+            .main {
+                padding: 16px;
+            }
+
+            .tags-toolbar {
+                padding: 12px;
+            }
+
+            .tag-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .code-editor {
+                font-size: 13px;
+                min-height: 300px;
+            }
+
+            .stage-intro h2 {
+                font-size: 22px;
+            }
+        }
+
+        /* === SCORE BADGE === */
+        .score-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(253, 203, 110, 0.2), rgba(253, 121, 168, 0.1));
+            border: 1px solid rgba(253, 203, 110, 0.3);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #FDCB6E;
+        }
+
+        /* === TAG COLORS === */
+        .tag-heading { border-left: 3px solid #6C5CE7; }
+        .tag-paragraph { border-left: 3px solid #00CEC9; }
+        .tag-image { border-left: 3px solid #FD79A8; }
+        .tag-table { border-left: 3px solid #F39C12; }
+        .tag-structure { border-left: 3px solid #A29BFE; }
+        .tag-style { border-left: 3px solid #00B894; }
+
+        /* === TOAST === */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 2000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { border-color: var(--success); color: var(--success); }
+        .toast.error { border-color: var(--danger); color: var(--danger); }
+        .toast.info { border-color: var(--primary); color: var(--primary-light); }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-inner">
+        <div class="logo">
+            <div class="logo-icon">💻</div>
+            <div>
+                <h1>HTML Тренажер</h1>
+                <span>Створення веб-сторінки</span>
+            </div>
+        </div>
+        <nav class="stage-nav">
+            <button class="stage-btn active" onclick="switchStage(1)">
+                <span class="stage-num">1</span> Конструктор
+            </button>
+            <button class="stage-btn" onclick="switchStage(2)">
+                <span class="stage-num">2</span> Редактор коду
+            </button>
+            <button class="stage-btn" onclick="switchStage(3)">
+                <span class="stage-num">3</span> Практичне завдання
+            </button>
+        </nav>
+        <div class="score-badge">⭐ <span id="score">0</span> балів</div>
+    </div>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+
+    <!-- ==================== STAGE 1 ==================== -->
+    <div class="stage active" id="stage-1">
+        <div class="stage-intro">
+            <h2>🏗️ Етап 1: Конструктор HTML</h2>
+            <p>Натискай на кнопки з тегами — вони додаватимуться у редактор. Праворуч бачитимеш живий результат твоєї сторінки!</p>
+        </div>
+
+        <div class="hints-bar">
+            💡 <strong>Підказка:</strong> Натисни на тег, щоб додати його. Змінюй текст між тегами прямо в редакторі!
+        </div>
+
+        <div class="workspace">
+            <!-- LEFT: Constructor -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">🛠️ Панель тегів</div>
+                    <div class="actions">
+                        <button class="btn btn-danger" onclick="clearEditor('editor1')">🗑️ Очистити</button>
+                        <button class="btn btn-warning" onclick="showExample()">📋 Приклад</button>
+                        <button class="btn btn-success" onclick="loadToEditor()">📥 Завантажити приклад</button>
+                    </div>
+                </div>
+                <div class="tags-toolbar">
+                    <button class="tag-btn tag-heading" onclick="insertTag('editor1', '&lt;h1&gt;', '&lt;/h1&gt;', 'Заголовок')">
+                        &lt;h1&gt;
+                        <span class="tooltip">Заголовок 1 рівня</span>
+                    </button>
+                    <button class="tag-btn tag-heading" onclick="insertTag('editor1', '&lt;h2&gt;', '&lt;/h2&gt;', 'Підзаголовок')">
+                        &lt;h2&gt;
+                        <span class="tooltip">Заголовок 2 рівня</span>
+                    </button>
+                    <button class="tag-btn tag-paragraph" onclick="insertTag('editor1', '&lt;p&gt;', '&lt;/p&gt;', 'Абзац')">
+                        &lt;p&gt;
+                        <span class="tooltip">Абзац тексту</span>
+                    </button>
+                    <button class="tag-btn tag-image" onclick="insertImgTag('editor1')">
+                        &lt;img&gt;
+                        <span class="tooltip">Зображення</span>
+                    </button>
+                    <button class="tag-btn tag-table" onclick="insertTag('editor1', '&lt;table&gt;', '&lt;/table&gt;', 'Таблиця')">
+                        &lt;table&gt;
+                        <span class="tooltip">Таблиця</span>
+                    </button>
+                    <button class="tag-btn tag-structure" onclick="insertTag('editor1', '&lt;tr&gt;', '&lt;/tr&gt;', 'Рядок таблиці')">
+                        &lt;tr&gt;
+                        <span class="tooltip">Рядок таблиці</span>
+                    </button>
+                    <button class="tag-btn tag-structure" onclick="insertTag('editor1', '&lt;td&gt;', '&lt;/td&gt;', 'Комірка таблиці')">
+                        &lt;td&gt;
+                        <span class="tooltip">Комірка таблиці</span>
+                    </button>
+                    <button class="tag-btn tag-style" onclick="insertTag('editor1', '&lt;b&gt;', '&lt;/b&gt;', 'Жирний')">
+                        &lt;b&gt;
+                        <span class="tooltip">Жирний текст</span>
+                    </button>
+                    <button class="tag-btn tag-style" onclick="insertTag('editor1', '&lt;i&gt;', '&lt;/i&gt;', 'Курсив')">
+                        &lt;i&gt;
+                        <span class="tooltip">Курсивний текст</span>
+                    </button>
+                    <button class="tag-btn tag-structure" onclick="insertTag('editor1', '&lt;br&gt;', '', 'Перенесення рядка')">
+                        &lt;br&gt;
+                        <span class="tooltip">Перенесення рядка</span>
+                    </button>
+                    <button class="tag-btn tag-structure" onclick="insertTag('editor1', '&lt;hr&gt;', '', 'Лінія')">
+                        &lt;hr&gt;
+                        <span class="tooltip">Горизонтальна лінія</span>
+                    </button>
+                    <button class="tag-btn tag-structure" onclick="insertFullPage('editor1')">
+                        📄 Повна сторінка
+                        <span class="tooltip">Створити повну структуру HTML</span>
+                    </button>
+                </div>
+                <div class="panel-body">
+                    <textarea id="editor1" class="code-editor code-with-numbers" placeholder="Натискай на теги зверху — вони з'являться тут...&#10;&#10;Або напиши HTML сам!"></textarea>
+                    <div class="error-box" id="error1"></div>
+                    <div class="success-box" id="success1"></div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Preview -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">👁️ Живий перегляд</div>
+                    <button class="btn btn-primary" onclick="updatePreview('editor1', 'preview1')">▶️ Оновити</button>
+                </div>
+                <div class="panel-body" style="background: white; padding: 0;">
+                    <iframe id="preview1" class="preview-frame" sandbox="allow-same-origin"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== STAGE 2 ==================== -->
+    <div class="stage" id="stage-2">
+        <div class="stage-intro">
+            <h2>✏️ Етап 2: Онлайн-редактор коду</h2>
+            <p>Тепер пиши HTML-код самостійно! Введи код у редактор та натисни «Запустити», щоб побачити результат.</p>
+        </div>
+
+        <div class="hints-bar">
+            💡 <strong>Підказка:</strong> Використовуй Tab для відступів. Натисни «Запустити» для оновлення результату.
+        </div>
+
+        <div class="workspace">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">📝 Редактор HTML</div>
+                    <div class="actions">
+                        <button class="btn btn-danger" onclick="clearEditor('editor2')">🗑️ Очистити</button>
+                        <button class="btn btn-warning" onclick="showExample()">📋 Приклад</button>
+                        <button class="btn btn-secondary" onclick="loadToEditor2()">📥 Завантажити приклад</button>
+                        <button class="btn btn-primary" onclick="runCode()">▶️ Запустити</button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <textarea id="editor2" class="code-editor" placeholder="Напиши свій HTML-код тут...&#10;&#10;Приклад:&#10;&lt;h1&gt;Привіт, світ!&lt;/h1&gt;&#10;&lt;p&gt;Це моя перша сторінка.&lt;/p&gt;"></textarea>
+                    <div class="error-box" id="error2"></div>
+                    <div class="success-box" id="success2"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">👁️ Результат</div>
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="openInNewTab()">🔗 Відкрити в новій вкладці</button>
+                    </div>
+                </div>
+                <div class="panel-body" style="background: white; padding: 0;">
+                    <iframe id="preview2" class="preview-frame" sandbox="allow-same-origin"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== STAGE 3 ==================== -->
+    <div class="stage" id="stage-3">
+        <div class="stage-intro">
+            <h2>🎯 Етап 3: Практичне завдання</h2>
+            <p>Створи міні-сайт школи за вказівками нижче. Усі елементи мають бути присутні!</p>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 Як виконати роботу:</h3>
+            <ol>
+                <li><strong>Спробуй скласти сторінку через конструктор</strong> (Етап 1) — щоб зрозуміти структуру</li>
+                <li><strong>Перейди до редактора коду</strong> (Етап 2) — потренуйся писати самостійно</li>
+                <li><strong>Напиши HTML самостійно</strong> у редакторі нижче, створивши сторінку школи:</li>
+            </ol>
+        </div>
+
+        <div class="workspace">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">📝 Твій код</div>
+                    <div class="actions">
+                        <button class="btn btn-danger" onclick="clearEditor('editor3')">🗑️ Очистити</button>
+                        <button class="btn btn-warning" onclick="showExample()">📋 Показати приклад</button>
+                        <button class="btn btn-primary" onclick="runTaskCode()">▶️ Запустити</button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <textarea id="editor3" class="code-editor" placeholder="Створи HTML-сторінку школи:&#10;&#10;&lt;h1&gt;Назва школи&lt;/h1&gt;&#10;&lt;p&gt;Опис школи...&lt;/p&gt;&#10;&lt;img src='...' alt='...'&gt;&#10;&lt;table&gt;...&lt;/table&gt;"></textarea>
+                    <div class="error-box" id="error3"></div>
+                    <div class="success-box" id="success3"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">👁️ Результат</div>
+                    <button class="btn btn-success" onclick="checkTask()">✅ Перевірити завдання</button>
+                </div>
+                <div class="panel-body" style="background: white; padding: 0;">
+                    <iframe id="preview3" class="preview-frame" sandbox="allow-same-origin"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHECKLIST -->
+        <div class="checklist" id="taskChecklist">
+            <h4>📋 Перевірка завдання:</h4>
+            <div class="checklist-item" id="check-h1" onclick="toggleCheck(this)">
+                <span class="checkbox"></span>
+                <span>Заголовок <code>&lt;h1&gt;</code> з назвою школи</span>
+            </div>
+            <div class="checklist-item" id="check-p" onclick="toggleCheck(this)">
+                <span class="checkbox"></span>
+                <span>Текст-опис <code>&lt;p&gt;</code></span>
+            </div>
+            <div class="checklist-item" id="check-img" onclick="toggleCheck(this)">
+                <span class="checkbox"></span>
+                <span>Зображення <code>&lt;img&gt;</code></span>
+            </div>
+            <div class="checklist-item" id="check-table" onclick="toggleCheck(this)">
+                <span class="checkbox"></span>
+                <span>Таблиця <code>&lt;table&gt;</code> з рядками <code>&lt;tr&gt;</code> та комірками <code>&lt;td&gt;</code></span>
+            </div>
+            <div class="checklist-item" id="check-style" onclick="toggleCheck(this)">
+                <span class="checkbox"></span>
+                <span>Оформлення: фон, рамки таблиці, вирівнювання тексту</span>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- EXAMPLE MODAL -->
+<div class="example-modal" id="exampleModal">
+    <div class="example-content">
+        <div class="example-header">
+            <h3>📋 Приклад готового HTML-коду</h3>
+            <button class="example-close" onclick="closeExample()">✕</button>
+        </div>
+        <div class="example-body">
+            <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 14px;">Цей код створює повноцінну сторінку школи з усіма необхідними елементами:</p>
+            <div class="example-code" id="exampleCode"></div>
+        </div>
+        <div class="example-actions">
+            <button class="btn btn-secondary" onclick="closeExample()">Закрити</button>
+            <button class="btn btn-primary" onclick="copyExample()">📋 Копіювати код</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+    // ============ STATE ============
+    let score = 0;
+    let autoUpdateInterval = null;
+
+    // ============ STAGE NAVIGATION ============
+    function switchStage(num) {
+        document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('stage-' + num).classList.add('active');
+        document.querySelectorAll('.stage-btn')[num - 1].classList.add('active');
+        showToast('Етап ' + num + ' активний', 'info');
+    }
+
+    // ============ INSERT TAGS ============
+    function insertTag(editorId, openTag, closeTag, name) {
+        const editor = document.getElementById(editorId);
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        const text = editor.value;
+
+        const selectedText = text.substring(start, end) || 'текст';
+        const newContent = openTag + selectedText + closeTag;
+
+        editor.value = text.substring(0, start) + newContent + text.substring(end);
+        editor.focus();
+
+        // Place cursor inside the tag
+        const cursorPos = start + openTag.length + (selectedText === 'текст' ? 5 : selectedText.length);
+        editor.setSelectionRange(cursorPos, cursorPos);
+
+        updatePreview(editorId, 'preview1');
+        showToast(`Додано тег ${name}`, 'info');
+    }
+
+    function insertImgTag(editorId) {
+        const editor = document.getElementById(editorId);
+        const start = editor.selectionStart;
+        const imgTag = '<img src="https://via.placeholder.com/400x200/6C5CE7/ffffff?text=Школа" alt="Фото школи">';
+        const text = editor.value;
+        editor.value = text.substring(0, start) + imgTag + text.substring(editor.selectionEnd);
+        editor.focus();
+        updatePreview(editorId, 'preview1');
+        showToast('Додано зображення', 'info');
+    }
+
+    function insertFullPage(editorId) {
+        const editor = document.getElementById(editorId);
+        editor.value = `<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Моя школа</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        table {
+            border: 1px solid #333;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        td {
+            border: 1px solid #333;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Школа №1 міста Києва</h1>
+    <p>Ласкаво просимо на наш шкільний сайт!</p>
+    <img src="https://via.placeholder.com/400x200/6C5CE7/ffffff?text=Школа" alt="Школа">
+    <table>
+        <tr>
+            <td>Предмет</td>
+            <td>Вчитель</td>
+        </tr>
+        <tr>
+            <td>Інформатика</td>
+            <td>Петренко О.І.</td>
+        </tr>
+        <tr>
+            <td>Математика</td>
+            <td>Іваненко М.В.</td>
+        </tr>
+    </table>
+</body>
+</html>`;
+        editor.focus();
+        updatePreview(editorId, 'preview1');
+        showToast('Створено повну структуру сторінки!', 'success');
+    }
+
+    // ============ PREVIEW ============
+    function updatePreview(editorId, previewId) {
+        const editor = document.getElementById(editorId);
+        const preview = document.getElementById(previewId);
+        const code = editor.value.trim();
+
+        if (!code) {
+            preview.srcdoc = '<html><body style="display:flex;align-items:center;justify-content:center;height:100vh;color:#999;font-family:Arial;"><div style="text-align:center;"><p style="font-size:18px;">Тут з\'явиться твоя сторінка ✨</p><p style="font-size:14px;">Додай теги або напиши HTML-код</p></div></body></html>';
+            return;
+        }
+
+        let fullHTML = code;
+        if (!code.includes('<html') && !code.includes('<!DOCTYPE')) {
+            fullHTML = `<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
+        table { border-collapse: collapse; width: 100%; }
+        td, th { border: 1px solid #ddd; padding: 10px; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+${code}
+</body>
+</html>`;
+        }
+
+        preview.srcdoc = fullHTML;
+    }
+
+    // ============ CODE EDITOR ACTIONS ============
+    function clearEditor(editorId) {
+        document.getElementById(editorId).value = '';
+        hideError(editorId);
+        hideSuccess(editorId);
+        if (editorId === 'editor1' || editorId === 'editor3') {
+            updatePreview(editorId, 'preview1');
+        }
+        if (editorId === 'editor2') {
+            updatePreview(editorId, 'preview2');
+        }
+        showToast('Код очищено', 'info');
+    }
+
+    function runCode() {
+        updatePreview('editor2', 'preview2');
+        validateCode('editor2', 'error2', 'success2');
+        addScore(5);
+        showToast('Код запущено! +5 балів', 'success');
+    }
+
+    function runTaskCode() {
+        const editor = document.getElementById('editor3');
+        const code = editor.value.trim();
+
+        if (!code) {
+            showError('error3', '⚠️ Напиши HTML-код перед запуском!');
+            return;
+        }
+
+        updatePreview('editor3', 'preview3');
+        validateCode('editor3', 'error3', 'success3');
+        addScore(10);
+        showToast('Код запущено! +10 балів', 'success');
+    }
+
+    function openInNewTab() {
+        const code = document.getElementById('editor2').value.trim();
+        if (!code) {
+            showError('error2', '⚠️ Спочатку напиши код!');
+            return;
+        }
+        const blob = new Blob([code], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+    }
+
+    // ============ VALIDATION ============
+    function validateCode(editorId, errorId, successId) {
+        const code = document.getElementById(editorId).value.trim().toLowerCase();
+        let errors = [];
+
+        // Check for unclosed tags (basic)
+        const tags = ['h1', 'h2', 'p', 'b', 'i'];
+        tags.forEach(tag => {
+            const openCount = (code.match(new RegExp('<' + tag + '[>\\s]', 'g')) || []).length;
+            const closeCount = (code.match(new RegExp('</' + tag + '>', 'g')) || []).length;
+            if (openCount > closeCount) {
+                errors.push(`Тег <${tag}> не закритий — додай </${tag}>`);
+            }
+        });
+
+        if (errors.length > 0) {
+            showError(errorId, '⚠️ ' + errors.join('<br>⚠️ '));
+            hideSuccess(successId);
+            return false;
+        } else {
+            hideError(errorId);
+            showSuccess(successId, '✅ Код валідний! Жодних помилок не знайдено.');
+            return true;
+        }
+    }
+
+    // ============ TASK CHECK ============
+    function checkTask() {
+        const editor = document.getElementById('editor3');
+        const code = editor.value.trim().toLowerCase();
+
+        if (!code) {
+            showError('error3', '⚠️ Спочатку напиши код!');
+            return;
+        }
+
+        updatePreview('editor3', 'preview3');
+
+        let checks = {
+            h1: code.includes('<h1>') && code.includes('</h1>'),
+            p: code.includes('<p>') && code.includes('</p>'),
+            img: code.includes('<img'),
+            table: code.includes('<table>') || code.includes('<table '),
+            style: code.includes('border') || code.includes('background') || code.includes('align') || code.includes('style')
+        };
+
+        // Update checklist UI
+        toggleCheckById('check-h1', checks.h1);
+        toggleCheckById('check-p', checks.p);
+        toggleCheckById('check-img', checks.img);
+        toggleCheckById('check-table', checks.table);
+        toggleCheckById('check-style', checks.style);
+
+        let allPassed = true;
+        for (let key in checks) {
+            if (!checks[key]) {
+                allPassed = false;
+                break;
+            }
+        }
+
+        if (allPassed) {
+            showSuccess('error3', '🎉 Чудово! Усі елементи присутні! Ти отримав(ла) 20 балів!');
+            addScore(20);
+            showToast('Завдання виконано! +20 балів 🎉', 'success');
+        } else {
+            let missing = [];
+            if (!checks.h1) missing.push('Заголовок <h1>');
+            if (!checks.p) missing.push('Текст <p>');
+            if (!checks.img) missing.push('Зображення <img>');
+            if (!checks.table) missing.push('Таблиця <table>');
+            if (!checks.style) missing.push('Оформлення (фон/рамки)');
+
+            showError('error3', '⚠️ Не вистачає: ' + missing.join(', '));
+            showToast('Перевір завдання — не всі елементи додано', 'error');
+        }
+    }
+
+    function toggleCheckById(id, value) {
+        const el = document.getElementById(id);
+        if (value) {
+            el.classList.add('checked');
+            el.querySelector('.checkbox').innerHTML = '✓';
+        } else {
+            el.classList.remove('checked');
+            el.querySelector('.checkbox').innerHTML = '';
+        }
+    }
+
+    function toggleCheck(el) {
+        el.classList.toggle('checked');
+        const checkbox = el.querySelector('.checkbox');
+        checkbox.innerHTML = el.classList.contains('checked') ? '✓' : '';
+    }
+
+    // ============ ERROR/SUCCESS ============
+    function showError(id, msg) {
+        const el = document.getElementById(id);
+        el.innerHTML = msg;
+        el.className = 'error-box show';
+    }
+
+    function hideError(id) {
+        const el = document.getElementById(id);
+        el.className = 'error-box';
+    }
+
+    function showSuccess(id, msg) {
+        const el = document.getElementById(id);
+        el.innerHTML = msg;
+        el.className = 'success-box show';
+    }
+
+    function hideSuccess(id) {
+        const el = document.getElementById(id);
+        el.className = 'success-box';
+    }
+
+    // ============ EXAMPLE ============
+    const exampleHTML = `<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Школа №1</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+            padding: 40px;
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #718096;
+            font-size: 16px;
+        }
+        img {
+            border-radius: 12px;
+            max-width: 100%;
+            margin: 20px 0;
+        }
+        table {
+            border: 2px solid #4a5568;
+            border-collapse: collapse;
+            margin: 20px auto;
+            width: 90%;
+        }
+        td, th {
+            border: 1px solid #4a5568;
+            padding: 12px 20px;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏫 Школа №1 міста Києва</h1>
+        <p>Ласкаво просимо на наш шкільний сайт! 
+           Ми — сучасна школа з поглибленим вивченням 
+           інформатики та математики.</p>
+        
+        <img src="https://via.placeholder.com/600x300/6C5CE7/ffffff?text=Наша+Школа" 
+             alt="Фото школи">
+        
+        <h2>📚 Розклад уроків</h2>
+        <table>
+            <tr>
+                <th>Предмет</th>
+                <th>Вчитель</th>
+                <th>Клас</th>
+            </tr>
+            <tr>
+                <td>Інформатика</td>
+                <td>Петренко О.І.</td>
+                <td>9-А</td>
+            </tr>
+            <tr>
+                <td>Математика</td>
+                <td>Іваненко М.В.</td>
+                <td>9-А</td>
+            </tr>
+            <tr>
+                <td>Українська мова</td>
+                <td>Коваленко Л.П.</td>
+                <td>9-А</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>`;
+
+    function showExample() {
+        document.getElementById('exampleCode').textContent = exampleHTML;
+        document.getElementById('exampleModal').classList.add('show');
+    }
+
+    function closeExample() {
+        document.getElementById('exampleModal').classList.remove('show');
+    }
+
+    function copyExample() {
+        navigator.clipboard.writeText(exampleHTML).then(() => {
+            showToast('Код скопійовано! 📋', 'success');
+        }).catch(() => {
+            showToast('Не вдалося скопіювати', 'error');
+        });
+    }
+
+    function loadToEditor() {
+        document.getElementById('editor1').value = exampleHTML;
+        updatePreview('editor1', 'preview1');
+        closeExample();
+        showToast('Приклад завантажено в редактор! 📥', 'success');
+        addScore(5);
+    }
+
+    function loadToEditor2() {
+        document.getElementById('editor2').value = exampleHTML;
+        updatePreview('editor2', 'preview2');
+        closeExample();
+        showToast('Приклад завантажено в редактор! 📥', 'success');
+        addScore(5);
+    }
+
+    // ============ SCORE ============
+    function addScore(points) {
+        score += points;
+        document.getElementById('score').textContent = score;
+    }
+
+    // ============ TOAST ============
+    function showToast(msg, type = 'info') {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = 'toast show ' + type;
+        setTimeout(() => {
+            toast.className = 'toast';
+        }, 3000);
+    }
+
+    // ============ AUTO-UPDATE ============
+    function setupAutoUpdate(editorId, previewId) {
+        const editor = document.getElementById(editorId);
+        let timeout;
+        editor.addEventListener('input', () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                updatePreview(editorId, previewId);
+            }, 800);
+        });
+    }
+
+    // ============ TAB KEY ============
+    document.querySelectorAll('.code-editor').forEach(editor => {
+        editor.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 2;
+            }
+        });
+    });
+
+    // ============ INIT ============
+    window.addEventListener('DOMContentLoaded', () => {
+        setupAutoUpdate('editor1', 'preview1');
+        setupAutoUpdate('editor2', 'preview2');
+        setupAutoUpdate('editor3', 'preview3');
+
+        // Initial preview
+        updatePreview('editor1', 'preview1');
+        updatePreview('editor2', 'preview2');
+        updatePreview('editor3', 'preview3');
+    });
+
+    // Close modal on outside click
+    document.getElementById('exampleModal').addEventListener('click', function(e) {
+        if (e.target === this) closeExample();
+    });
+</script>
+
+</body>
+</html>
